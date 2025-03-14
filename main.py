@@ -1,35 +1,37 @@
-#! /usr/bin/python3
+from stats import count_words, count_characters, sort_characters
+import sys
 
 def main():
-    book_path = "/home/davinson/PROGRAMMING/workspace/github.com/davinson-ortiz/bookbot/books/frankenstein.txt"
-    text = read_book(book_path)
-    number_of_words = count_words(text)
-    char_counts = count_chars(text)
-    sorted_char_counts = sort_char_counts(char_counts)
-    print_report(book_path, number_of_words, sorted_char_counts)
+    if len(sys.argv) != 2:
+        print("Usage: python3 main.py <path_to_book>")
+        sys.exit(1)
 
-def read_book(path):
-    with open(path) as f:
-        return f.read()
-
-def count_words(text):
-    return len(text.split())
-
-def count_chars(text):
-    char_counts = {}
-    for char in text.lower():
-        if char.isalpha():
-            char_counts[char] = char_counts.get(char, 0) + 1
-    return char_counts
-
-def sort_char_counts(char_counts):
-    return sorted(char_counts.items(), key=lambda item: item[1], reverse=True)
-
-def print_report(book_path, num_words, sorted_char_counts):
-    print(f"--- Begin report of {book_path.split("/")[-1]} ---")
-    print(f"{num_words} words found in the document\n")
-    for char, count in sorted_char_counts:
-        print(f"The '{char}' character was found {count} times")
-    print("--- End report ---")
-
-main()
+    file_path = sys.argv[1]
+    file_contens = get_book_text(file_path)
+    num_words = count_words(file_contens)
+    num_chars = count_characters(file_contens)
+    sorted_characters = sort_characters(num_chars)
+    print_report(file_path, num_words, sorted_characters)
+    
+    
+def get_book_text(path_to_file: str) -> str:
+    with open(path_to_file, encoding="utf-8") as f:
+        file_contents = f.read()
+        return file_contents
+    
+def print_report(file_path, num_words, sorted_characters):
+    """Print a formatted report"""
+    print("============ BOOKBOT ============")
+    print(f"Analyzing book found at {file_path}...")
+    print("----------- Word Count ----------")
+    print(f"Found {num_words} total words")
+    print("--------- Character Count -------")
+    for i in sorted_characters:
+        if not i["char"].isalpha():
+            continue
+        print(f"{i["char"]}: {i["count"]}")
+    print("============= END ===============")
+    
+     
+if __name__=="__main__":
+    main()
